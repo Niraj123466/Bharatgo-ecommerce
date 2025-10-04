@@ -121,7 +121,7 @@ function Navbar() {
               to="/home" 
               className="text-2xl font-bold text-gradient font-display"
             >
-              Shopi
+              Shopora
             </NavLink>
           </div>
 
