@@ -32,6 +32,8 @@ A modern e-commerce application built with React, Redux Toolkit, and Vite. This 
 
 ## 📦 Installation
 
+### Option 1: Standard Installation
+
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
@@ -48,8 +50,29 @@ A modern e-commerce application built with React, Redux Toolkit, and Vite. This 
    npm run dev
    ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:5173`
+### Option 2: Using Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd E-Commerce-main
+   ```
+
+2. **Build and run with Docker**
+   ```bash
+   # Build and start the container
+   docker compose up -d
+   ```
+
+3. **Access the application**
+   - Open your browser and navigate to http://localhost:8080
+
+4. **Stop the container**
+   ```bash
+   docker compose down
+   ```
+
+> Note: Make sure you have Docker installed on your system. If you're using an older version of Docker, you might need to use `docker-compose` (with hyphen) instead of `docker compose` (with space).
 
 ## 🏗️ Project Structure
 
