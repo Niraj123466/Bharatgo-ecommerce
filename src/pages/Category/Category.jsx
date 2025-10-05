@@ -13,7 +13,9 @@ import {
   ShoppingCartIcon,
   EyeIcon,
   HeartIcon,
-  StarIcon
+  StarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from "@heroicons/react/24/outline";
 
 function Category() {
@@ -27,6 +29,9 @@ function Category() {
   const [sort, setSort] = useState("default");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(8);
+  const [paginatedProducts, setPaginatedProducts] = useState([]);
 
   const cartItems = useSelector((state) => state.cart.items);
 
@@ -80,7 +85,15 @@ function Category() {
     }
 
     setFilteredProducts(result);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [search, sort, priceRange, products]);
+  
+  // Update paginated products when filtered products or current page changes
+  useEffect(() => {
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    setPaginatedProducts(filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct));
+  }, [filteredProducts, currentPage, productsPerPage]);
 
   const handleAddToCart = (product) => {
     dispatch(addToCart({
@@ -235,8 +248,8 @@ function Category() {
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 stagger-animation">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product, index) => {
+        {paginatedProducts.length > 0 ? (
+          paginatedProducts.map((product, index) => {
             const isInCart = cartItems.some((item) => item.id === product.id);
 
             return (
@@ -327,6 +340,57 @@ function Category() {
           </div>
         )}
       </div>
+      
+      {/* Pagination Controls */}
+      {filteredProducts.length > 0 && (
+        <div className="flex justify-center items-center mt-8 space-x-2">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`flex items-center justify-center w-10 h-10 rounded-md ${
+              currentPage === 1
+                ? "bg-secondary-100 text-secondary-400 cursor-not-allowed"
+                : "bg-white text-secondary-700 hover:bg-secondary-100"
+            } border border-secondary-300 shadow-soft transition-all duration-200`}
+          >
+            <ChevronLeftIcon className="h-5 w-5" />
+          </button>
+          
+          <div className="flex items-center space-x-1">
+            {[...Array(Math.ceil(filteredProducts.length / productsPerPage))].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`w-10 h-10 rounded-md ${
+                  currentPage === index + 1
+                    ? "bg-primary-600 text-white"
+                    : "bg-white text-secondary-700 hover:bg-secondary-100"
+                } border border-secondary-300 shadow-soft transition-all duration-200`}
+              >
+                {index + 1}
+              </button>
+            )).slice(
+              // Show limited page numbers with current page in the middle
+              Math.max(0, currentPage - 3),
+              Math.min(Math.ceil(filteredProducts.length / productsPerPage), currentPage + 2)
+            )}
+          </div>
+          
+          <button
+            onClick={() => setCurrentPage(prev => 
+              Math.min(prev + 1, Math.ceil(filteredProducts.length / productsPerPage))
+            )}
+            disabled={currentPage === Math.ceil(filteredProducts.length / productsPerPage)}
+            className={`flex items-center justify-center w-10 h-10 rounded-md ${
+              currentPage === Math.ceil(filteredProducts.length / productsPerPage)
+                ? "bg-secondary-100 text-secondary-400 cursor-not-allowed"
+                : "bg-white text-secondary-700 hover:bg-secondary-100"
+            } border border-secondary-300 shadow-soft transition-all duration-200`}
+          >
+            <ChevronRightIcon className="h-5 w-5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
